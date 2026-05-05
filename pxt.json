@@ -1,6 +1,7 @@
 {
-    "name": "Balance",
-    "description": "",
+    "name": "a4_ms-scale",
+    "version": "1.0.0",
+    "description": "ms-scale whit Weight Sensor and 4x4 passive keypad extension for micro:bit MakeCode",
     "dependencies": {
         "core": "*",
         "radio": "*",
