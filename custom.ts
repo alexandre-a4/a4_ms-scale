@@ -142,17 +142,17 @@ namespace HX711WeightSensor {
 /**
  * Blocks for a 4x4 passive matrix keypad.
  *
- * Wiring:
+ * Wiring with reversed 8-pin connector:
  *
- * Row 1 -> P0   keys 1,2,3,A
- * Row 2 -> P1   keys 4,5,6,B
- * Row 3 -> P2   keys 7,8,9,C
- * Row 4 -> P3   keys *,0,#,D
+ * Row 1 -> P15 keys 1,2,3,A
+ * Row 2 -> P14 keys 4,5,6,B
+ * Row 3 -> P13 keys 7,8,9,C
+ * Row 4 -> P8  keys *,0,#,D
  *
- * Column 1 -> P8    keys 1,4,7,*
- * Column 2 -> P13   keys 2,5,8,0
- * Column 3 -> P14   keys 3,6,9,#
- * Column 4 -> P15   keys A,B,C,D
+ * Column 1 -> P3 keys 1,4,7,*
+ * Column 2 -> P2 keys 2,5,8,0
+ * Column 3 -> P1 keys 3,6,9,#
+ * Column 4 -> P0 keys A,B,C,D
  *
  * Note:
  * P3 is shared with the micro:bit LED matrix.
@@ -168,53 +168,56 @@ namespace Keypad4x4 {
         // Disable the display so P3 can be used reliably as a GPIO pin.
         led.enable(false)
 
-        pins.setPull(DigitalPin.P0, PinPullMode.PullUp)
-        pins.setPull(DigitalPin.P1, PinPullMode.PullUp)
-        pins.setPull(DigitalPin.P2, PinPullMode.PullUp)
-        pins.setPull(DigitalPin.P3, PinPullMode.PullUp)
+        // Rows as inputs with pull-up
+        pins.setPull(DigitalPin.P15, PinPullMode.PullUp)
+        pins.setPull(DigitalPin.P14, PinPullMode.PullUp)
+        pins.setPull(DigitalPin.P13, PinPullMode.PullUp)
+        pins.setPull(DigitalPin.P8, PinPullMode.PullUp)
 
-        pins.digitalWritePin(DigitalPin.P8, 1)
-        pins.digitalWritePin(DigitalPin.P13, 1)
-        pins.digitalWritePin(DigitalPin.P14, 1)
-        pins.digitalWritePin(DigitalPin.P15, 1)
+        // Columns as outputs, idle HIGH
+        pins.digitalWritePin(DigitalPin.P3, 1)
+        pins.digitalWritePin(DigitalPin.P2, 1)
+        pins.digitalWritePin(DigitalPin.P1, 1)
+        pins.digitalWritePin(DigitalPin.P0, 1)
     }
 
     function setAllColumnsHigh(): void {
-        pins.digitalWritePin(DigitalPin.P8, 1)
-        pins.digitalWritePin(DigitalPin.P13, 1)
-        pins.digitalWritePin(DigitalPin.P14, 1)
-        pins.digitalWritePin(DigitalPin.P15, 1)
+        pins.digitalWritePin(DigitalPin.P3, 1)
+        pins.digitalWritePin(DigitalPin.P2, 1)
+        pins.digitalWritePin(DigitalPin.P1, 1)
+        pins.digitalWritePin(DigitalPin.P0, 1)
     }
 
     function setColumnLow(column: number): void {
         setAllColumnsHigh()
 
         if (column == 0) {
-            pins.digitalWritePin(DigitalPin.P8, 0)
+            pins.digitalWritePin(DigitalPin.P3, 0)
         } else if (column == 1) {
-            pins.digitalWritePin(DigitalPin.P13, 0)
+            pins.digitalWritePin(DigitalPin.P2, 0)
         } else if (column == 2) {
-            pins.digitalWritePin(DigitalPin.P14, 0)
+            pins.digitalWritePin(DigitalPin.P1, 0)
         } else {
-            pins.digitalWritePin(DigitalPin.P15, 0)
+            pins.digitalWritePin(DigitalPin.P0, 0)
         }
 
         control.waitMicros(200)
     }
 
     function readRow(): number {
-        if (pins.digitalReadPin(DigitalPin.P0) == 0) {
+        if (pins.digitalReadPin(DigitalPin.P15) == 0) {
             return 0
         }
-        if (pins.digitalReadPin(DigitalPin.P1) == 0) {
+        if (pins.digitalReadPin(DigitalPin.P14) == 0) {
             return 1
         }
-        if (pins.digitalReadPin(DigitalPin.P2) == 0) {
+        if (pins.digitalReadPin(DigitalPin.P13) == 0) {
             return 2
         }
-        if (pins.digitalReadPin(DigitalPin.P3) == 0) {
+        if (pins.digitalReadPin(DigitalPin.P8) == 0) {
             return 3
         }
+
         return -1
     }
 
@@ -247,6 +250,7 @@ namespace Keypad4x4 {
 
         for (let column = 0; column < 4; column++) {
             setColumnLow(column)
+
             let row = readRow()
 
             if (row >= 0) {
@@ -347,7 +351,7 @@ namespace Keypad4x4 {
     }
 
     /**
-     * Disable the micro:bit LED display to release P3 for GPIO use.
+     * Disable the microbit LED display to release P3 for GPIO use.
      */
     //% block="disable microbit display for P3"
     //% weight=30
@@ -356,7 +360,7 @@ namespace Keypad4x4 {
     }
 
     /**
-     * Enable the micro:bit LED display again.
+     * Enable the microbit LED display again.
      * Warning: P3 may no longer work reliably for the keypad.
      */
     //% block="enable microbit display"
@@ -364,4 +368,5 @@ namespace Keypad4x4 {
     export function enableDisplay(): void {
         led.enable(true)
     }
+}
 }
