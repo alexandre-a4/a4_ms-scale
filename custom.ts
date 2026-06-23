@@ -10,7 +10,6 @@
 //% weight=100 color=#0fbc11 icon="\uf24e" block="a4 Weight Sensor"
 namespace HX711WeightSensor {
     const HX711_ADDR = 0x64
-
     const REG_CLEAR_REG_STATE = 0x65
     const REG_DATA_GET_RAM_DATA = 0x66
     const REG_DATA_GET_PEEL_FLAG = 0x69
@@ -47,7 +46,6 @@ namespace HX711WeightSensor {
         buffer.setNumber(NumberFormat.UInt8LE, 1, REG_CLEAR_REG_STATE)
         pins.i2cWriteBuffer(HX711_ADDR, buffer)
         basic.pause(200)
-
         tare()
     }
 
@@ -121,10 +119,12 @@ namespace HX711WeightSensor {
     //% weight=40
     export function rawAverage(samples: number): number {
         let sum = 0
+
         for (let i = 0; i < samples; i++) {
             sum += rawValue()
             basic.pause(5)
         }
+
         return sum / samples
     }
 
@@ -143,6 +143,12 @@ namespace HX711WeightSensor {
  * Blocks for a 4x4 passive matrix keypad.
  *
  * Wiring with reversed 8-pin connector:
+ *
+ * Original connector order:
+ * P0, P1, P2, P3, P8, P13, P14, P15
+ *
+ * New connector order after rotation:
+ * P15, P14, P13, P8, P3, P2, P1, P0
  *
  * Row 1 -> P15 keys 1,2,3,A
  * Row 2 -> P14 keys 4,5,6,B
@@ -208,12 +214,15 @@ namespace Keypad4x4 {
         if (pins.digitalReadPin(DigitalPin.P15) == 0) {
             return 0
         }
+
         if (pins.digitalReadPin(DigitalPin.P14) == 0) {
             return 1
         }
+
         if (pins.digitalReadPin(DigitalPin.P13) == 0) {
             return 2
         }
+
         if (pins.digitalReadPin(DigitalPin.P8) == 0) {
             return 3
         }
@@ -368,5 +377,4 @@ namespace Keypad4x4 {
     export function enableDisplay(): void {
         led.enable(true)
     }
-}
 }
